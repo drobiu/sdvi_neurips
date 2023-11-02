@@ -7,21 +7,39 @@ import logging
 import pyro.contrib.gp as gp
 
 from torch.distributions import biject_to
+from torch import nn
 
 from .abstract_model import AbstractModel
 from .pyro_extensions.guides import AutoSLPNormalReparamGuide
 
 
-class GPKernelLearning(AbstractModel):
+USE_CUDA = True
+
+class GPKernelLearning(nn.Module):
     does_lppd_evaluation = True
     slps_identified_by_discrete_samples = True
+    autoguide_hide_vars = []
 
     input_dim = 1
 
     def __init__(self, data_path, jitter=1e-6):
+        super().__init__()
         self.X, self.y, self.X_val, self.y_val = self.load_data(data_path)
 
+        if USE_CUDA:
+            self.X.to('cuda')
+            self.y.to('cuda')
+            self.X_val.to('cuda')
+            self.y_val.to('cuda')
+
         self.jitter = jitter
+
+        if USE_CUDA:
+            self.jitter = torch.tensor(self.jitter)
+
+
+    def calculate_ground_truth_weights(self, sdvi):
+        return None, None
 
     @staticmethod
     def load_data(data_path):

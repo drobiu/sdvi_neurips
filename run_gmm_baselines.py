@@ -20,7 +20,7 @@ from pyro.infer.autoguide.utils import deep_getattr, deep_setattr
 from pyro.nn.module import PyroParam
 from torch.distributions import constraints
 
-from models.real_gmm import InfiniteGMMModel
+from models.gmm import InfiniteGMMModel
 from models.pyro_extensions.dcc import DCC, SLPInfo, IterationInfo
 from models.pyro_extensions.resource_allocation import DCCUtility
 
@@ -324,10 +324,10 @@ def main(cfg):
 
     model = InfiniteGMMModel(
         data_path=hydra.utils.to_absolute_path(
-            "data/gmm_higher_dims/gmm_data.npz"
+            "data/gmm/gmm_data.npz"
         ),
         validation_data_path=hydra.utils.to_absolute_path(
-            "data/gmm_higher_dims/gmm_data_validation.npz"
+            "data/gmm/gmm_data_validation.npz"
         ),
         cluster_means_dim=100,
         num_observations=1000,

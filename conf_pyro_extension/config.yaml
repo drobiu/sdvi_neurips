@@ -1,8 +1,8 @@
 hydra:
   run:
-    dir: ./experiments/${name}/${hydra.job.override_dirname}/seed=${seed}
+    dir: ./experiments/${name}/${now}/seed=${seed}
   sweep:
-    dir: ./experiments/${name}/${hydra.job.override_dirname}
+    dir: ./experiments/${name}/${now}
   job:
     config:
       override_dirname:
@@ -48,3 +48,4 @@ posterior_predictive_num_samples: 100
 
 name: test
 seed: 0
+cuda: true

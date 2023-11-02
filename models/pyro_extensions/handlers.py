@@ -25,7 +25,7 @@ class BranchingTraceMessenger(pyro.poutine.messenger.Messenger):
 
     def _postprocess_message(self, msg):
         if msg["type"] == "sample" and msg["infer"].get("branching", False):
-            self.branching_trace += str(msg["value"].item())
+            self.branching_trace += f"_{str(msg["value"].item())}"
             self.sampled_values[msg["name"]] = msg["value"]
 
     def get_trace(self):

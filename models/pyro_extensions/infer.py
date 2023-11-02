@@ -8,6 +8,7 @@ import logging
 from pyro import poutine
 from pyro.infer.autoguide.initialization import init_to_mean
 from torch import multiprocessing
+from torch import nn
 from collections import OrderedDict
 
 from .handlers import (
@@ -36,7 +37,7 @@ def slp_identified_by_sampled_values(
     return branching_trace == string_represention
 
 
-class SDVI:
+class SDVI(nn.Module):
     def __init__(
         self,
         model,
@@ -59,6 +60,7 @@ class SDVI:
         use_iwae_for_weights=False,
         save_metrics_every_n=100,
     ):
+        super().__init__()
         self.num_parallel_processes = num_parallel_processes
 
         self.model = model

@@ -293,7 +293,7 @@ def forward_kl_callback(sdvi, forward_kl_results, model):
     save_forward_kl_metrics(forward_kl_results, "forward_kl_results.csv")
 
 
-@hydra.main(config_path="conf_pyro_extension", config_name="config")
+@hydra.main(config_path="conf_pyro_extension", config_name="config", version_base="1.1")
 def main(cfg):
     pyro.set_rng_seed(cfg.seed)
     torch.manual_seed(cfg.seed)
@@ -302,10 +302,15 @@ def main(cfg):
     logging.info(os.getcwd())
 
     model = hydra.utils.instantiate(cfg.model)
+    sdvi_model = cfg.sdvi
+
+    if cfg.cuda:
+        model.to('cuda')
+
 
     resource_allocation_utility = hydra.utils.instantiate(cfg.resource_allocation)
     sdvi = hydra.utils.instantiate(
-        cfg.sdvi,
+        sdvi_model,
         model=model,
         utility_class=resource_allocation_utility,
         autoguide_hide_vars=model.autoguide_hide_vars,
@@ -313,6 +318,7 @@ def main(cfg):
         slps_identified_by_discrete_samples=model.slps_identified_by_discrete_samples,
     )
 
+    # sdvi.to('cuda')
     _, exclusive_kl_results, resource_allocation_metrics = sdvi.run(
         forward_kl_callback
     )
@@ -418,4 +424,5 @@ def main(cfg):
 
 
 if __name__ == "__main__":
+    # torch.set_default_tensor_type('torch.cuda.FloatTensor')
     main()
