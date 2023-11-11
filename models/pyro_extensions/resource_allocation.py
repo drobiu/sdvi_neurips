@@ -117,6 +117,7 @@ class SuccessiveHalving:
         self.num_final_arms = num_final_arms
 
     def calculate_num_phases(self, num_arms: int) -> int:
+        # finds how many iterations of successive halving are needed
         self.num_phases = 1
         num_active_arms = num_arms
         while num_active_arms > self.num_final_arms:
@@ -126,11 +127,13 @@ class SuccessiveHalving:
         return self.num_phases
 
     def calculate_num_optimization_steps(self, num_active_arms: int) -> int:
+        # finds how many optimization steps are needed alltogether
         return math.floor(
             self.num_total_iterations / (self.num_phases * num_active_arms)
         )
 
     def select_active_slps(self, arm2reward: dict[str, float]) -> list[str]:
+        # select best (remaining) candidates in the iteration
         num_active_arms = len(arm2reward.keys())
         num_to_keep = max(math.ceil(num_active_arms / 2), self.num_final_arms)
         arms_to_keep = heapq.nlargest(num_to_keep, arm2reward, key=arm2reward.get)

@@ -43,17 +43,18 @@ class SDVI(nn.Module):
         model,
         learning_rate,
         guide_class_name,
-        utility_class,
+        utility_class, # successive halving utils
         slps_identified_by_discrete_samples=False,
         find_slp_samples=100,
         forward_kl_iter=100,
         forward_kl_num_particles=1,
         initial_num_iterations=100,
-        num_iterations_per_step=100,
+        num_iterations_per_step=100, # successive halving
         num_steps=100,
         exclusive_kl_num_particles=1,
         elbo_estimate_num_particles=100,
-        iwae_num_inner=None,
+        iwae_num_inner=None, # importance weighted autoencoder (iwae) 
+        # https://justin-tan.github.io/blog/2020/06/20/Intuitive-Importance-Weighted-ELBO-Bounds#12-the-importance-weighted-elbo
         autoguide_hide_vars=[],
         num_parallel_processes=10,
         init_loc_fn=init_to_mean,  # Initialization of the means of the AutoGuides
@@ -565,7 +566,7 @@ class SDVI(nn.Module):
 
         return forward_kl_results, exclusive_kl_results, resource_allocation_metrics
 
-    def estimate_local_elbo(self, guide, branching_trace, num_monte_carlo=1):
+    def estimate_local_elbo(self, guide, branching_trace, num_monte_carlo=1): # for local slp guides
         log_p = torch.zeros((num_monte_carlo))
         log_q = torch.zeros((num_monte_carlo))
         for i in range(num_monte_carlo):
@@ -584,7 +585,7 @@ class SDVI(nn.Module):
                     branching_trace,
                 ).log_prob()
 
-        # If the density is -Inf then the given point lies outside the SLP.
+        # If the density is -Inf then the given point lies outside the SLP. TODO: so address not executed?
         is_in_slp = (~torch.isinf(log_p)).float()
         Z_hat = is_in_slp.mean()
 

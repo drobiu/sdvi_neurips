@@ -46,15 +46,7 @@ So to reproduce Figure 1 run this script 5 times with different IDs and then the
 
 Running SDVI for this model can be done using 
 ```
-poetry run python run_exp_pyro_extension.py \
-    name=normal_model_sdvi \
-    sdvi.forward_kl_iter=1000 \
-    sdvi.forward_kl_num_particles=100 \
-    sdvi.elbo_estimate_num_particles=1000 \
-    sdvi.exclusive_kl_num_particles=5 \
-    model=normal_model \
-    resource_allocation=successive_halving \
-    resource_allocation.num_total_iterations=100000
+python run_exp_pyro_extension.py name=normal_model_sdvi sdvi.forward_kl_iter=1000 sdvi.forward_kl_num_particles=100 sdvi.elbo_estimate_num_particles=1000 sdvi.exclusive_kl_num_particles=5 model=normal_model resource_allocation=successive_halving resource_allocation.num_total_iterations=100000
 ```
 
 The baselines can be run using the `run_baselines.py` script e.g. to run the BBVI baseline:
@@ -72,15 +64,7 @@ The `baselines_config` directory lays out the other configurations for the other
 
 Running SDVI for this model can be done using
 ```
-poetry run python run_exp_pyro_extension.py \
-    name=infinite_gmm_d100_sdvi \
-    sdvi.exclusive_kl_num_particles=10 \
-    sdvi.elbo_estimate_num_particles=100 \
-    model=infinite_gmm_d100 \
-    posterior_predictive_num_samples=10 \
-    sdvi.learning_rate=0.1 \
-    resource_allocation=successive_halving \
-    resource_allocation.num_total_iterations=20000
+python run_exp_pyro_extension.py name=infinite_gmm_d100_sdvi sdvi.exclusive_kl_num_particles=10 sdvi.elbo_estimate_num_particles=100 model=infinite_gmm_d100 posterior_predictive_num_samples=10 sdvi.learning_rate=0.1 resource_allocation=successive_halving resource_allocation.num_total_iterations=20000
 ```
 
 The baselines can be run using the `run_gmm_baselines.py` script e.g. to run the BBVI baseline:
@@ -101,7 +85,7 @@ The `gmm_baselines_conf` directory lays out the other configurations for the oth
 
 Running SDVI for this model can be done using
 ```
-poetry run python run_exp_pyro_extension.py name=gp_grammar_sdvi sdvi.exclusive_kl_num_particles=1 sdvi.elbo_estimate_num_particles=100 model=gp_kernel_learning posterior_predictive_num_samples=10 sdvi.learning_rate=0.005 sdvi.save_metrics_every_n=200 resource_allocation=successive_halving resource_allocation.num_total_iterations=1000000 cuda=true
+python run_exp_pyro_extension.py name=gp_grammar_sdvi sdvi.exclusive_kl_num_particles=1 sdvi.elbo_estimate_num_particles=100 model=gp_kernel_learning posterior_predictive_num_samples=10 sdvi.learning_rate=0.005 sdvi.save_metrics_every_n=200 resource_allocation=successive_halving resource_allocation.num_total_iterations=1000000
 ```
 
 The baselines can be run using the `run_gp_baselines.py` script e.g. to run the BBVI baseline:
@@ -115,3 +99,7 @@ poetry run python run_gp_baselines.py \
     inference_algo.evaluate_every_n=100
 ```
 The `gp_baselines_conf` directory lays out the other configurations for the other baselines.
+
+# Additional experiments
+
+python run_exp_pyro_extension.py name=unnormalized_densities_sdvi sdvi.forward_kl_iter=100 sdvi.forward_kl_num_particles=50 sdvi.elbo_estimate_num_particles=100 sdvi.exclusive_kl_num_particles=5 model=unnormalized_densities resource_allocation=successive_halving resource_allocation.num_total_iterations=200 

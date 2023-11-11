@@ -4,6 +4,7 @@ from pyro import poutine
 def get_sample_addresses(trace: poutine.Trace, included_addresses: set = set()):
     addresses = []
     for name, site in trace.nodes.items():
+        # print(name, site)
         if (
             site["type"] != "sample"
             or site["is_observed"]

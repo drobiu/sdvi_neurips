@@ -1,0 +1,3 @@
+# @package _group_
+_target_: models.unnormalized_densities.UnnormalizedDensities
+data_path: C:\Users\drobi\Desktop\uni\sdvi_neurips\data\unnormalized_densities\data.txt

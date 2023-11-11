@@ -7,6 +7,7 @@ import logging
 import copy
 
 from sklearn.decomposition import PCA
+from torch import nn
 
 from .abstract_model import AbstractModel
 
@@ -14,7 +15,7 @@ MAX_NUM_CLUSTERS = 10
 NUM_OBSERVATIONS = 100
 
 
-class FiniteGMMModel(AbstractModel):
+class FiniteGMMModel(nn.Module):
     max_num_clusters = MAX_NUM_CLUSTERS
     slps_identified_by_discrete_samples = True
 
@@ -31,6 +32,7 @@ class FiniteGMMModel(AbstractModel):
         ordered_cluster_means=False,
         cluster_means_prior_std=10,
     ):
+        super().__init__()
         self.observed_data = None
         self.ground_truth = None
         self.validation_data_path = validation_data_path
@@ -55,8 +57,12 @@ class FiniteGMMModel(AbstractModel):
     def __call__(self):
         return self.model()
 
+    def calculate_ground_truth_weights(self, sdvi):
+        return None, None
+
     def model(self):
         num_clusters = (
+            # TODO: Poisson?
             pyro.sample(
                 "num_clusters",
                 dist.Categorical(
@@ -218,6 +224,7 @@ class InfiniteGMMModel(FiniteGMMModel):
         num_observations=NUM_OBSERVATIONS,
         cluster_means_prior_std=10,
     ):
+        super().__init__()
         self.observed_data = None
         self.ground_truth = None
         self.validation_data_path = validation_data_path
@@ -283,6 +290,7 @@ class StochasticInfiniteGMMModel(FiniteGMMModel):
         cluster_means_prior_std=10,
         num_subsample=100,
     ):
+        super().__init__()
         self.observed_data = None
         self.ground_truth = None
         self.validation_data_path = validation_data_path
