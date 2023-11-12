@@ -17,7 +17,7 @@ The dependencies can be installed using Pip `pip install -r requirements.txt`
 python run_exp_pyro_extension.py name=distinct_slps_sdvi sdvi.forward_kl_iter=100 sdvi.forward_kl_num_particles=50 sdvi.elbo_estimate_num_particles=10 sdvi.exclusive_kl_num_particles=5 model=distinct_slps resource_allocation=successive_halving resource_allocation.num_total_iterations=20
 
 ### Overlapping SLPs
-python run_exp_pyro_extension.py name=overlapping_slps_sdvi sdvi.forward_kl_iter=100 sdvi.forward_kl_num_particles=50 sdvi.elbo_estimate_num_particles=100 sdvi.exclusive_kl_num_particles=5 model=slps_with_overlap resource_allocation=successive_halving resource_allocation.num_total_iterations=200 
+python run_exp_pyro_extension.py name=overlapping_slps_sdvi sdvi.forward_kl_iter=100 sdvi.forward_kl_num_particles=50 sdvi.elbo_estimate_num_particles=100 sdvi.exclusive_kl_num_particles=5 model=overlapping_slps resource_allocation=successive_halving resource_allocation.num_total_iterations=200 
 
 ### Low Likelihood SLPs
 python run_exp_pyro_extension.py name=low_likelihood_slps_sdvi_1000 sdvi.forward_kl_iter=100 sdvi.forward_kl_num_particles=1000 sdvi.elbo_estimate_num_particles=5 sdvi.exclusive_kl_num_particles=5 model=low_likelihood_slps resource_allocation=successive_halving resource_allocation.num_total_iterations=50 sdvi.find_slp_samples=10000 sdvi.save_metrics_every_n=5
