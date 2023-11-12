@@ -15,43 +15,66 @@ sns.reset_orig()
 from .abstract_model import AbstractModel
 
 
-class UnnormalizedDensities(nn.Module):
+class SLPsWithOverlap(nn.Module):
     autoguide_hide_vars = []
 
     does_lppd_evaluation = False
 
     slps_identified_by_discrete_samples = False
 
-    def __init__(self, data_path):
+    def __init__(self,):
         super().__init__()
-        self.data = self.load_data(data_path)
+        self.data = self.load_data()
         self.batch_size = 10
 
     def __call__(self):
-        x = pyro.sample("x", dist.Normal(0, 1))
+        theta1 = pyro.sample("theta1", dist.Normal(0, 1))
+        theta2 = pyro.sample("theta2", dist.Normal(0, 1))
         m1 = pyro.sample("m1", dist.Uniform(0, 1))
 
+        std = 1
+
         if m1 < 0.5:
-            std = 0.62177
             with pyro.plate(f"data1", len(self.data), subsample_size=self.batch_size) as ind:
-                # print(ind)
                 batch = self.data[ind]
-                y = pyro.sample("y1", dist.Normal(x, std), obs=batch, infer={'branching': True})
+                mu = theta1 * batch[:, 0] + theta2 * batch[:, 2]
+
+                y = pyro.sample("y1", dist.Normal(mu, std), obs=batch[:, 4], infer={'branching': True})
 
         else:
-            std = 2.0
             with pyro.plate(f"data2", len(self.data), subsample_size=self.batch_size) as ind:
                 batch = self.data[ind]
-                y = pyro.sample("y2", dist.Normal(x, std), obs=batch, infer={'branching': True})
+                mu = theta1 * batch[:, 0] + theta2 * batch[:, 3]
 
-        return x
+                y = pyro.sample("y2", dist.Normal(mu, std), obs=batch[:, 4], infer={'branching': True})
+
+        return y
 
 
     @staticmethod
-    def load_data(data_path):
-        # data = torch.tensor(np.loadtxt(data_path))
+    def load_data():
+        beta = [1.5, 1.5, 0.3, 0.1]
+
+        def generate_data(n):
+            data = []
+            
+            for i in range(n):
+                y = 0
+                row = []
+                e = np.random.normal()
+
+                for b in beta:
+                    x_current = np.random.normal()
+                    row.append(x_current)
+                    y += b * x_current
+                
+                row.append(y + e)
+                data.append(row)
+                
+            return np.array(data)
+
         n_samples = 200
-        data = torch.tensor([np.random.normal() for _ in range(n_samples)])
+        data = torch.tensor(generate_data(n_samples))
 
         return data
 

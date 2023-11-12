@@ -1,0 +1,4 @@
+# @package _group_
+_target_: models.low_likelihood_slps.LowLikelihoodSLPs
+if_probability: 0.5
+slp_num_power: 3

@@ -15,7 +15,7 @@ sns.reset_orig()
 from .abstract_model import AbstractModel
 
 
-class UnnormalizedDensities(nn.Module):
+class DistinctSLPs(nn.Module):
     autoguide_hide_vars = []
 
     does_lppd_evaluation = False

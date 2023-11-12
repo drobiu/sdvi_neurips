@@ -279,18 +279,19 @@ def plot_lppd(log_posterior_predictive_densities, fname):
     fig.savefig(fname)
 
 
-def forward_kl_callback(sdvi, forward_kl_results, model):
+def forward_kl_callback(sdvi, forward_kl_results, model, plots=True):
     for bt, result in forward_kl_results.items():
-        os.makedirs("forward_kl_plots", exist_ok=True)
-        plots_prefix = os.path.join("forward_kl_plots", f"slp{bt}_")
-        make_metric_plots(
-            result,
-            plots_prefix,
-            metric_names=["losses"],
-            plot_unique=False,
-            logscale=False,
-        )
-        model.make_parameter_plots(result, sdvi.guides[bt], bt, plots_prefix)
+        if plots:
+            os.makedirs("forward_kl_plots", exist_ok=True)
+            plots_prefix = os.path.join("forward_kl_plots", f"slp{bt}_")
+            make_metric_plots(
+                result,
+                plots_prefix,
+                metric_names=["losses"],
+                plot_unique=False,
+                logscale=False,
+            )
+            model.make_parameter_plots(result, sdvi.guides[bt], bt, plots_prefix)
 
     save_forward_kl_metrics(forward_kl_results, "forward_kl_results.csv")
 
@@ -306,8 +307,8 @@ def main(cfg):
             f.write(f"{end-start}\n")
 
 def run(cfg):
-    pyro.set_rng_seed(cfg.seed)
-    torch.manual_seed(cfg.seed)
+    # pyro.set_rng_seed(cfg.seed)
+    # torch.manual_seed(cfg.seed)
     torch.set_default_dtype(torch.float64)
 
     logging.info(os.getcwd())
@@ -370,15 +371,15 @@ def run(cfg):
             ground_truth_slp_weights=ground_truth_branch_weights,
         )
 
-    top_5_slps = [
-        (k, v[-1].item())
-        for k, v in sorted(
+    all_slps = [(k, v[-1].item()) for k, v in sorted(
             branch_weights.items(), key=lambda item: item[1][-1], reverse=True
-        )[:5]
-    ]
+        )]
+    
+
+    top_5_slps = all_slps[:5]
 
     with open('../../weights.txt', 'a+') as file:
-        np.savetxt(file, top_5_slps, fmt='%s', delimiter=' ', newline=' ')
+        np.savetxt(file, all_slps, fmt='%s', delimiter=' ', newline=' ')
         file.write("\n")
 
     logging.info(f"Top 5 SLPs: {top_5_slps}")
