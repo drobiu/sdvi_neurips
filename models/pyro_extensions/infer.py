@@ -753,8 +753,8 @@ def inner_loop_reparam(
 ):
     torch.set_num_threads(4)
     torch.set_default_dtype(torch.float64)
-    torch.manual_seed(base_seed + worker_ix)
-    pyro.set_rng_seed(base_seed + worker_ix)
+    # torch.manual_seed(base_seed + worker_ix)
+    # pyro.set_rng_seed(base_seed + worker_ix)
 
     # save_every = 200
 
@@ -957,8 +957,8 @@ def inner_loop_score(
 ):
     torch.set_num_threads(4)
     torch.set_default_dtype(torch.float64)
-    torch.manual_seed(base_seed + worker_ix)
-    pyro.set_rng_seed(base_seed + worker_ix)
+    # torch.manual_seed(base_seed + worker_ix)
+    # pyro.set_rng_seed(base_seed + worker_ix)
 
     optimizer = torch.optim.Adam(guide.parameters(), lr=learning_rate)
     if not (optim_state is None):

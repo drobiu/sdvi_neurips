@@ -1,6 +1,6 @@
 hydra:
   run:
-    dir: ./experiments/${name}/${now:%H-%M-%S}/seed=${seed}
+    dir: ./experiments/${name}/${now:%H-%M-%S}
   sweep:
     dir: ./experiments/${name}/${now:%H-%M-%S}
   job:
