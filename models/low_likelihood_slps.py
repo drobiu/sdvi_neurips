@@ -1,7 +1,5 @@
 from ctypes import addressof
 import torch
-import pyro
-import pyro.distributions as dist
 import matplotlib.pyplot as plt
 import math
 import logging
@@ -12,7 +10,8 @@ import torch.nn as nn
 
 sns.reset_orig()
 
-from .abstract_model import AbstractModel
+from pyro.distributions import Normal, Uniform
+from pyro import plate, sample
 
 
 class LowLikelihoodSLPs(nn.Module):
@@ -28,17 +27,17 @@ class LowLikelihoodSLPs(nn.Module):
         self.slp_num_power = slp_num_power
 
     def __call__(self):
-        m1 = pyro.sample("m1", dist.Uniform(0, 1))
+        m1 = sample("m1", Uniform(0, 1))
 
         std = 1
         mu = 0
 
         if m1 < self.if_probability:
             slp = f"{m1 / (self.if_probability * 10):.{self.slp_num_power}f}".split('.')[1] # Generate 100 branch slp ids
-            y = pyro.sample(f"y_{slp}", dist.Normal(mu, std), infer={'branching': True})
+            y = sample(f"y_{slp}", Normal(mu, std), infer={'branching': True})
 
         else:
-            y = pyro.sample("y_else", dist.Normal(mu, std), infer={'branching': True})
+            y = sample("y_else", Normal(mu, std), infer={'branching': True})
 
         return y
 

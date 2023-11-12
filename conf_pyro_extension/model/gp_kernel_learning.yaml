@@ -1,3 +1,0 @@
-# @package _group_
-_target_: models.gp_kernel_learning.GPKernelLearning
-data_path: "C:/Users/drobi/Desktop/uni/sdvi_neurips/data/airline/airline.csv"

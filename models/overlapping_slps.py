@@ -1,7 +1,5 @@
 from ctypes import addressof
 import torch
-import pyro
-import pyro.distributions as dist
 import matplotlib.pyplot as plt
 import math
 import logging
@@ -12,10 +10,11 @@ import torch.nn as nn
 
 sns.reset_orig()
 
-from .abstract_model import AbstractModel
+from pyro.distributions import Normal, Uniform
+from pyro import plate, sample
 
 
-class SLPsWithOverlap(nn.Module):
+class OverlappingSLPs(nn.Module):
     autoguide_hide_vars = []
 
     does_lppd_evaluation = False
@@ -28,25 +27,25 @@ class SLPsWithOverlap(nn.Module):
         self.batch_size = 10
 
     def __call__(self):
-        theta1 = pyro.sample("theta1", dist.Normal(0, 1))
-        theta2 = pyro.sample("theta2", dist.Normal(0, 1))
-        m1 = pyro.sample("m1", dist.Uniform(0, 1))
+        theta1 = sample("theta1", Normal(0, 1))
+        theta2 = sample("theta2", Normal(0, 1))
+        m1 = sample("m1", Uniform(0, 1))
 
         std = 1
 
         if m1 < 0.5:
-            with pyro.plate(f"data1", len(self.data), subsample_size=self.batch_size) as ind:
+            with plate(f"data1", len(self.data), subsample_size=self.batch_size) as ind:
                 batch = self.data[ind]
                 mu = theta1 * batch[:, 0] + theta2 * batch[:, 2]
 
-                y = pyro.sample("y1", dist.Normal(mu, std), obs=batch[:, 4], infer={'branching': True})
+                y = sample("y1", Normal(mu, std), obs=batch[:, 4], infer={'branching': True})
 
         else:
-            with pyro.plate(f"data2", len(self.data), subsample_size=self.batch_size) as ind:
+            with plate(f"data2", len(self.data), subsample_size=self.batch_size) as ind:
                 batch = self.data[ind]
                 mu = theta1 * batch[:, 0] + theta2 * batch[:, 3]
 
-                y = pyro.sample("y2", dist.Normal(mu, std), obs=batch[:, 4], infer={'branching': True})
+                y = sample("y2", Normal(mu, std), obs=batch[:, 4], infer={'branching': True})
 
         return y
 

@@ -1,7 +1,0 @@
-# @package _group_
-_target_: models.gmm.InfiniteGMMModel
-data_path: C:\Users\drobi\Desktop\uni\sdvi_neurips\data\gmm\gmm_data.npz
-validation_data_path: C:\Users\drobi\Desktop\uni\sdvi_neurips\data\gmm\gmm_data_validation.npz
-cluster_means_dim: 100
-num_observations: 1000
-cluster_means_prior_std: 10

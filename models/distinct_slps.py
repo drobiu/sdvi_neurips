@@ -1,7 +1,5 @@
 from ctypes import addressof
 import torch
-import pyro
-import pyro.distributions as dist
 import matplotlib.pyplot as plt
 import math
 import logging
@@ -12,7 +10,8 @@ import torch.nn as nn
 
 sns.reset_orig()
 
-from .abstract_model import AbstractModel
+from pyro.distributions import Normal, Uniform
+from pyro import plate, sample
 
 
 class DistinctSLPs(nn.Module):
@@ -22,34 +21,33 @@ class DistinctSLPs(nn.Module):
 
     slps_identified_by_discrete_samples = False
 
-    def __init__(self, data_path):
+    def __init__(self):
         super().__init__()
-        self.data = self.load_data(data_path)
+        self.data = self.load_data()
         self.batch_size = 10
 
     def __call__(self):
-        x = pyro.sample("x", dist.Normal(0, 1))
-        m1 = pyro.sample("m1", dist.Uniform(0, 1))
+        x = sample("x", Normal(0, 1))
+        m1 = sample("m1", Uniform(0, 1))
+        # print(m1)
 
         if m1 < 0.5:
             std = 0.62177
-            with pyro.plate(f"data1", len(self.data), subsample_size=self.batch_size) as ind:
-                # print(ind)
+            with plate(f"data1", len(self.data), subsample_size=self.batch_size) as ind:
                 batch = self.data[ind]
-                y = pyro.sample("y1", dist.Normal(x, std), obs=batch, infer={'branching': True})
+                y = sample("y1", Normal(x, std), obs=batch, infer={'branching': True})
 
         else:
             std = 2.0
-            with pyro.plate(f"data2", len(self.data), subsample_size=self.batch_size) as ind:
+            with plate(f"data2", len(self.data), subsample_size=self.batch_size) as ind:
                 batch = self.data[ind]
-                y = pyro.sample("y2", dist.Normal(x, std), obs=batch, infer={'branching': True})
+                y = sample("y2", Normal(x, std), obs=batch, infer={'branching': True})
 
-        return x
+        return y
 
 
     @staticmethod
-    def load_data(data_path):
-        # data = torch.tensor(np.loadtxt(data_path))
+    def load_data():
         n_samples = 200
         data = torch.tensor([np.random.normal() for _ in range(n_samples)])
 

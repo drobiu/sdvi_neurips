@@ -1,7 +1,5 @@
 from ctypes import addressof
 import torch
-import pyro
-import pyro.distributions as dist
 import matplotlib.pyplot as plt
 import math
 import logging
@@ -12,7 +10,8 @@ import torch.nn as nn
 
 sns.reset_orig()
 
-from .abstract_model import AbstractModel
+from pyro.distributions import Normal, Uniform
+from pyro import plate, sample
 
 
 class UnfeasibleSLPs(nn.Module):
@@ -46,29 +45,27 @@ class UnfeasibleSLPs(nn.Module):
     # 18: return burglary;
 
     def __call__(self):
-        earthquake = pyro.sample("earthquake", dist.Uniform(0, 1)) < 0.5
-        burglary = pyro.sample(f"e{earthquake}_burglary", dist.Uniform(0, 1)) < 0.5
-        c = pyro.sample(f"e{earthquake}_b{burglary}", dist.Uniform(0, 1)) < 0.5
+        earthquake = sample("earthquake", Uniform(0, 1)) < 0.5
+        burglary = sample(f"e{earthquake}_burglary", Uniform(0, 1)) < 0.5
+        c = sample(f"e{earthquake}_b{burglary}", Uniform(0, 1)) < 0.5
 
         alarm = earthquake | burglary
 
         if earthquake:
-            phoneWorking = pyro.sample("phoneWorking1", dist.Uniform(0, 1), infer={'branching': True}) < 0.7
+            phoneWorking = sample("phoneWorking1", Uniform(0, 1), infer={'branching': True}) < 0.7
         else:
-            phoneWorking = pyro.sample("phoneWorking2", dist.Uniform(0, 1), infer={'branching': True}) < 0.99
+            phoneWorking = sample("phoneWorking2", Uniform(0, 1), infer={'branching': True}) < 0.99
 
         if alarm:
             if earthquake:
-                maryWakes = pyro.sample("maryWakes1", dist.Uniform(0, 1), infer={'branching': True}) < 0.8
+                maryWakes = sample("maryWakes1", Uniform(0, 1), infer={'branching': True}) < 0.8
             else:
-                maryWakes = pyro.sample("maryWakes2", dist.Uniform(0, 1), infer={'branching': True}) < 0.6
+                maryWakes = sample("maryWakes2", Uniform(0, 1), infer={'branching': True}) < 0.6
         
         else:
-            maryWakes = pyro.sample("maryWakes3", dist.Uniform(0, 1), infer={'branching': True}) < 0.2
+            maryWakes = sample("maryWakes3", Uniform(0, 1), infer={'branching': True}) < 0.2
 
         called = maryWakes & phoneWorking
-
-        # pyro.sample("called", dist.Uniform(0, 1), obs=called)
 
         return called
 

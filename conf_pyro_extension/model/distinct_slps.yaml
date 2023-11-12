@@ -1,3 +1,2 @@
 # @package _group_
-_target_: models.distinct_slps.DisntinctSLPs
-data_path: C:\Users\drobi\Desktop\uni\sdvi_neurips\data\distinct_slps\data.txt
+_target_: models.distinct_slps.DistinctSLPs

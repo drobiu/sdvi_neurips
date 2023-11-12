@@ -307,8 +307,8 @@ def main(cfg):
             f.write(f"{end-start}\n")
 
 def run(cfg):
-    # pyro.set_rng_seed(cfg.seed)
-    # torch.manual_seed(cfg.seed)
+    pyro.set_rng_seed(cfg.seed)
+    torch.manual_seed(cfg.seed)
     torch.set_default_dtype(torch.float64)
 
     logging.info(os.getcwd())
